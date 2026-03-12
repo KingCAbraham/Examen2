@@ -1,0 +1,28 @@
+# Directorios de dependencias
+node_modules/
+/frontend/node_modules/
+/backend/node_modules/
+
+# Directorios de compilación de Angular
+dist/
+/frontend/dist/
+.angular/
+/frontend/.angular/
+
+# Configuraciones y variables de entorno secretas
+.env
+backend/.env
+
+# Ayudas y scripts proporcionados por el Agente (IA)
+database/
+guia_db_conexion.md
+
+# Archivos de SO y editores
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
