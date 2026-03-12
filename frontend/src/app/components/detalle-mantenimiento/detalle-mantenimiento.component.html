@@ -1,0 +1,122 @@
+<div class="detalle-container" *ngIf="vehiculo">
+
+    <div class="header-row">
+        <button mat-flat-button class="btn-back" [routerLink]="['/vehiculos']">
+            <mat-icon>arrow_back</mat-icon> Volver al Directorio
+        </button>
+    </div>
+
+    <mat-card class="vehiculo-info-card">
+        <mat-card-header>
+            <mat-card-title class="card-title-neon">
+                <mat-icon>directions_car</mat-icon>
+                {{vehiculo.marca}} {{vehiculo.modelo}}
+            </mat-card-title>
+            <mat-card-subtitle>
+                <div class="placa-chip">{{vehiculo.placas}}</div>
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Año Fabricación</span>
+                    <span class="info-value">{{vehiculo.anio}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Número de Serie (VIN)</span>
+                    <span class="info-value"
+                        style="font-family: var(--font-mono); letter-spacing: 1px;">{{vehiculo.vin}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Propietario / Cliente</span>
+                    <span class="info-value">{{vehiculo.cliente}}</span>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <div class="seccion-header">
+        <mat-icon color="accent">assignment</mat-icon>
+        <h2>Historial de Diagnóstico y Reparación</h2>
+        <span style="flex: 1"></span>
+        <button mat-raised-button color="primary" class="btn-neon"
+            [routerLink]="['/vehiculo', vehiculo.id, 'nuevo-registro']">
+            <mat-icon>add</mat-icon> Nuevo Informe
+        </button>
+    </div>
+
+    <div *ngIf="mantenimientos.length > 0" class="mantenimientos-grid">
+        <mat-card *ngFor="let m of mantenimientos" class="mantenimiento-card">
+            <mat-card-content>
+                <div class="card-header-flex">
+                    <div class="fecha-badge">
+                        <mat-icon>calendar_today</mat-icon>
+                        {{m.fecha | date:'dd MMM yyyy HH:mm'}}
+                    </div>
+                    <div class="km-badge">
+                        <mat-icon>speed</mat-icon>
+                        {{m.kilometraje | number}} km
+                    </div>
+                </div>
+
+                <div class="registro-content">
+                    <div class="diagnostico-seccion">
+                        <div class="label-tech">SÍNTOMAS/REPORTE</div>
+                        <div class="descripcion-text">
+                            {{m.descripcion_falla}}
+                        </div>
+                    </div>
+
+                    <div class="mediciones-box" *ngIf="m.lecturas_multimetro || m.codigos_falla || m.voltaje_bateria">
+                        <div class="mediciones-title">
+                            <mat-icon>memory</mat-icon> Datos de Escáner y Telemetría
+                        </div>
+
+                        <div class="param-grid">
+                            <div class="param-item" *ngIf="m.codigos_falla">
+                                <span class="param-label">Cód. DTC OBD-II</span>
+                                <span class="param-value alert">{{m.codigos_falla}}</span>
+                            </div>
+                            <div class="param-item" *ngIf="m.voltaje_bateria">
+                                <span class="param-label">Batería (VDC)</span>
+                                <span class="param-value"
+                                    [class.alert]="m.voltaje_bateria < 12">{{m.voltaje_bateria}}V</span>
+                            </div>
+                            <div class="param-item" *ngIf="m.lecturas_multimetro">
+                                <span class="param-label">Telemetría Sensor</span>
+                                <span class="param-value">{{m.lecturas_multimetro}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <mat-divider class="tech-divider"></mat-divider>
+
+                    <div class="solucion-seccion">
+                        <div class="label-tech">TRABAJO REALIZADO</div>
+                        <div class="solucion-text">{{m.trabajo_realizado}}</div>
+                    </div>
+
+                    <div class="refacciones-seccion" *ngIf="m.refacciones_utilizadas">
+                        <div class="label-tech">REFACCIONES / INSUMOS</div>
+                        <div class="refacciones-text">
+                            <mat-icon>inventory_2</mat-icon>
+                            {{m.refacciones_utilizadas}}
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <div *ngIf="mantenimientos.length === 0" class="sin-registros">
+        <mat-icon>history_toggle_off</mat-icon>
+        <h3>Historial en blanco</h3>
+        <p>Este vehículo no tiene reportes de mantenimiento previos registrados en el sistema.</p>
+    </div>
+
+</div>
+
+<div *ngIf="!vehiculo" class="loading-state">
+    <mat-icon class="pulse-icon">sensors</mat-icon>
+    <p>Estableciendo conexión OBD...</p>
+</div>

@@ -1,0 +1,115 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Gestión de Acceso</h1>
+            <p class="page-subtitle">Administración de cuentas y privilegios del sistema</p>
+        </div>
+        <button mat-raised-button color="primary" class="btn-neon" (click)="toggleForm()">
+            <mat-icon>{{ mostrarFormulario ? 'close' : 'person_add' }}</mat-icon>
+            {{ mostrarFormulario ? 'Cancelar' : 'Nuevo Usuario' }}
+        </button>
+    </div>
+
+    <!-- FORMULARIO DE ALTA -->
+    <mat-card class="registro-card mat-elevation-z12 fade-in" *ngIf="mostrarFormulario">
+        <mat-card-header>
+            <mat-card-title>Crear Credencial de Acceso</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="security-warning">
+                <mat-icon>security</mat-icon>
+                <span>La contraseña será encriptada mediante bcrypt y no podrá ser recuperada, solo reseteada.</span>
+            </div>
+            
+            <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="form-grid-usuarios">
+                
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombre de Usuario</mat-label>
+                    <input matInput formControlName="username" placeholder="Ej. jperez">
+                    <mat-icon matPrefix>account_circle</mat-icon>
+                    <mat-error *ngIf="usuarioForm.get('username')?.hasError('required')">El nombre de usuario es requerido</mat-error>
+                    <mat-error *ngIf="usuarioForm.get('username')?.hasError('minlength')">Debe tener al menos 4 caracteres</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Contraseña Temporal</mat-label>
+                    <input matInput formControlName="password" type="password" placeholder="Mínimo 6 caracteres">
+                    <mat-icon matPrefix>password</mat-icon>
+                    <mat-error *ngIf="usuarioForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
+                    <mat-error *ngIf="usuarioForm.get('password')?.hasError('minlength')">Debe tener al menos 6 caracteres algebraicos</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Rol de Sistema</mat-label>
+                    <mat-select formControlName="rol">
+                        <mat-option *ngFor="let rol of roles" [value]="rol.value">
+                            {{ rol.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix>admin_panel_settings</mat-icon>
+                </mat-form-field>
+            </form>
+        </mat-card-content>
+        <mat-card-actions align="end" style="padding-right: 24px; padding-bottom: 24px;">
+            <button mat-button (click)="toggleForm()">Cancelar</button>
+            <button mat-raised-button color="accent" class="btn-neon" (click)="onSubmit()" [disabled]="guardando">
+                <mat-icon *ngIf="guardando" class="spinner">autorenew</mat-icon>
+                <mat-icon *ngIf="!guardando">how_to_reg</mat-icon>
+                {{ guardando ? 'Registrando...' : 'Emitir Credencial' }}
+            </button>
+        </mat-card-actions>
+    </mat-card>
+
+    <!-- TABLA DE USUARIOS -->
+    <div class="table-container mat-elevation-z8 fade-in">
+        
+        <table mat-table [dataSource]="usuarios" class="dark-table">
+            
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> ID </th>
+                <td mat-cell *matCellDef="let element" class="table-code"> #{{element.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef> USUARIO </th>
+                <td mat-cell *matCellDef="let element" class="table-highlight"> &#64;{{element.username}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="rol">
+                <th mat-header-cell *matHeaderCellDef> PERFIL </th>
+                <td mat-cell *matCellDef="let element"> 
+                    <span class="role-badge" [ngClass]="element.rol === 'admin' ? 'role-admin' : 'role-mecanico'">
+                        {{ element.rol | uppercase }}
+                    </span>
+                </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="fecha_creacion">
+                <th mat-header-cell *matHeaderCellDef> FECHA DE ALTA </th>
+                <td mat-cell *matCellDef="let element" class="table-muted"> 
+                    {{ (element.fecha_creacion | date:'mediumDate') || 'Migración Ant.' }} 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="text-right"> ESTADO </th>
+                <td mat-cell *matCellDef="let element" class="text-right">
+                    <span class="status-indicator">●</span> Activo
+                </td>
+            </ng-container>
+
+            <!-- Acciones Column -->
+            <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef class="text-right"> ACCIONES </th>
+                <td mat-cell *matCellDef="let element" class="text-right action-buttons">
+                    <button mat-icon-button color="warn" matTooltip="Revocar Acceso" (click)="eliminarUsuario(element.id)">
+                        <mat-icon>person_remove</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="interactive-row"></tr>
+        </table>
+    </div>
+</div>

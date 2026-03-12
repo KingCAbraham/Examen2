@@ -1,0 +1,75 @@
+<mat-sidenav-container class="app-container" autosize>
+
+  <!-- SIDEBAR: Solo se muestra si el usuario está logueado -->
+  <mat-sidenav #sidenav mode="side" [opened]="isLoggedIn" class="app-sidenav">
+    <div class="brand-header">
+      <img src="/assets/vag_logo.png" alt="VAG Logo" class="brand-logo">
+      <div class="brand-text">
+        <h2>Odissey</h2>
+        <span class="highlight">AutoTech</span>
+      </div>
+    </div>
+
+    <!-- NAVEGACIÓN PRINCIPAL -->
+    <mat-nav-list>
+      <div class="nav-section-title">OPERACIONES</div>
+      <a mat-list-item routerLink="/vehiculos" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>directions_car</mat-icon>
+        <div matListItemTitle>Vehículos</div>
+      </a>
+      
+      <a mat-list-item routerLink="/clientes" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>groups</mat-icon>
+        <div matListItemTitle>Clientes</div>
+      </a>
+      <a mat-list-item routerLink="/inventario" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>inventory_2</mat-icon>
+        <div matListItemTitle>Inventario</div>
+      </a>
+
+      <!-- MENÚ DE ADMIN: Solo visible si el usuario es admin -->
+      <ng-container *ngIf="isAdmin">
+        <div class="nav-section-title">ADMINISTRACIÓN</div>
+        <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>manage_accounts</mat-icon>
+          <div matListItemTitle>Usuarios (Admin)</div>
+        </a>
+      </ng-container>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <mat-sidenav-content class="main-content-wrapper">
+    
+    <!-- TOPBAR -->
+    <mat-toolbar class="top-bar mat-elevation-z4">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isLoggedIn">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="toolbar-spacer"></span>
+
+      <!-- INFO DEL USUARIO LOGUEADO -->
+      <div class="user-profile-section" *ngIf="isLoggedIn">
+        <div class="user-badges">
+          <span class="role-badge" [class.admin-badge]="isAdmin">{{ userRole | uppercase }}</span>
+        </div>
+        <div class="user-greeting">
+          Hola, <strong>{{ username }}</strong>
+        </div>
+        <button mat-icon-button (click)="logout()" matTooltip="Cerrar Sesión">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+
+    </mat-toolbar>
+
+    <!-- ÁREA DE RUTAS -->
+    <main class="router-wrapper">
+      <router-outlet></router-outlet>
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

@@ -1,0 +1,133 @@
+<div class="form-container" *ngIf="vehiculo">
+
+    <div class="header-row">
+        <button mat-flat-button class="btn-back" [routerLink]="['/vehiculo', vehiculo.id, 'mantenimientos']">
+            <mat-icon>arrow_back</mat-icon> Historial
+        </button>
+    </div>
+
+    <mat-card class="vehiculo-info-card">
+        <mat-card-header>
+            <mat-card-title class="card-title-neon">
+                <mat-icon color="accent">directions_car</mat-icon>
+                {{vehiculo.marca}} {{vehiculo.modelo}}
+            </mat-card-title>
+            <mat-card-subtitle>
+                <span class="placa-chip">{{vehiculo.placas}}</span>
+            </mat-card-subtitle>
+        </mat-card-header>
+    </mat-card>
+
+    <div class="seccion-header">
+        <mat-icon color="primary">add_road</mat-icon>
+        <h2>Ingreso de Parámetros OBD-II / Mantenimiento</h2>
+    </div>
+
+    <mat-card class="form-card">
+        <mat-card-content>
+            <form [formGroup]="mantenimientoForm" (ngSubmit)="onSubmit()" class="diagnostico-form">
+
+                <div class="form-grid">
+                    <!-- Fila 1: Vehículo y Fecha -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>Vehículo en Diagnóstico</mat-label>
+                        <input matInput [value]="vehiculo.marca + ' ' + vehiculo.modelo" disabled>
+                        <mat-icon matPrefix>directions_car</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Fecha/Hora Sistema</mat-label>
+                        <input matInput formControlName="fecha">
+                        <mat-icon matSuffix>schedule</mat-icon>
+                    </mat-form-field>
+
+                    <!-- Fila 2: KM y Batería -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>Kilometraje (Odómetro)</mat-label>
+                        <input matInput type="number" formControlName="kilometraje" placeholder="Ej. 45000">
+                        <mat-icon matSuffix>speed</mat-icon>
+                        <span matSuffix>km</span>
+                        <mat-error
+                            *ngIf="mantenimientoForm.get('kilometraje')?.hasError('required')">Requerido.</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Voltaje Batería (VDC)</mat-label>
+                        <input matInput type="number" formControlName="voltaje_bateria" placeholder="Ej. 12.6">
+                        <mat-icon matPrefix>battery_charging_full</mat-icon>
+                        <span matSuffix>V</span>
+                    </mat-form-field>
+
+                    <!-- Tipo de Servicio -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>Tipo de Servicio</mat-label>
+                        <mat-select formControlName="tipo_servicio">
+                            <mat-option *ngFor="let s of serviciosPredefinidos" [value]="s">
+                                {{s}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>settings_suggest</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Código DTC OBD-II</mat-label>
+                        <input type="text" placeholder="Busca código..." matInput formControlName="codigos_falla"
+                            [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            @for (option of dtcsFiltrados | async; track option.codigo) {
+                            <mat-option [value]="option.codigo">
+                                <strong>{{option.codigo}}</strong> - {{option.descripcion}}
+                            </mat-option>
+                            }
+                        </mat-autocomplete>
+                        <mat-icon matPrefix>memory</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <!-- Bloques Ancho Completo -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Síntomas / Reporte del Cliente</mat-label>
+                    <textarea matInput formControlName="descripcion_falla" rows="2"
+                        placeholder="Ej. El motor vibra en ralentí..."></textarea>
+                    <mat-error *ngIf="mantenimientoForm.get('descripcion_falla')?.hasError('required')">
+                        Describa los síntomas.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Lectura Específica (Sensores/Multímetro)</mat-label>
+                    <input matInput formControlName="lecturas_multimetro" placeholder="Ej. Sensor MAF 1.5V idle">
+                    <mat-icon matPrefix>electric_bolt</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Trabajo Realizado / Solución Aplicada</mat-label>
+                    <textarea matInput formControlName="trabajo_realizado" rows="3"
+                        placeholder="Detalle la reparación efectuada..."></textarea>
+                    <mat-error *ngIf="mantenimientoForm.get('trabajo_realizado')?.hasError('required')">
+                        Obligatorio registrar la solución.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Refacciones e Insumos Utilizados</mat-label>
+                    <input matInput formControlName="refacciones_utilizadas"
+                        placeholder="Ej. Balatas, Filtro de aire, Aceite...">
+                    <mat-icon matPrefix>inventory_2</mat-icon>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="!mantenimientoForm.valid"
+                    class="btn-neon">
+                    <mat-icon>save</mat-icon> Guardar en Base de Datos
+                </button>
+
+            </form>
+        </mat-card-content>
+    </mat-card>
+
+</div>
+
+<div *ngIf="!vehiculo" class="loading-state">
+    <mat-icon class="pulse-icon">sensors</mat-icon>
+    <p>Estableciendo conexión OBD...</p>
+</div>

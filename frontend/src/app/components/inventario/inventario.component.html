@@ -1,0 +1,139 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Inventario de Refacciones</h1>
+            <p class="page-subtitle">Control de existencias y precios del almacén</p>
+        </div>
+        <button mat-raised-button color="accent" class="btn-neon" (click)="toggleForm()">
+            <mat-icon>{{ mostrarFormulario ? 'close' : 'add_box' }}</mat-icon>
+            {{ mostrarFormulario ? 'Cancelar Registro' : 'Nueva Pieza' }}
+        </button>
+    </div>
+
+    <!-- FORMULARIO DE ALTA (DESPLEGABLE) -->
+    <mat-card class="registro-card mat-elevation-z12 fade-in" *ngIf="mostrarFormulario">
+        <mat-card-header>
+            <mat-card-title>{{ editingArticuloId ? 'Actualizar Artículo' : 'Alta de Artículo al Catálogo' }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup]="articuloForm" (ngSubmit)="onSubmit()" class="form-grid">
+                
+                <!-- Fila 1 -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Código SKU / Núm. Parte</mat-label>
+                    <input matInput formControlName="sku" placeholder="Ej. FILTER-OIL-01">
+                    <mat-icon matPrefix>qr_code</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombre de la Pieza</mat-label>
+                    <input matInput formControlName="nombre_pieza" placeholder="Ej. Filtro de Aceite Sintético">
+                    <mat-icon matPrefix>build</mat-icon>
+                </mat-form-field>
+
+                <!-- Fila 2 -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Categoría</mat-label>
+                    <mat-select formControlName="categoria">
+                        <mat-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix>category</mat-icon>
+                </mat-form-field>
+                
+                <div class="costos-grid">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Precio Unitario ($)</mat-label>
+                        <input matInput type="number" formControlName="precio_unitario">
+                        <mat-icon matPrefix>attach_money</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Stock Inicial</mat-label>
+                        <input matInput type="number" formControlName="cantidad_stock">
+                        <mat-icon matPrefix>inventory</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <!-- Fila 3 -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Descripción / Observaciones (Opcional)</mat-label>
+                    <textarea matInput formControlName="descripcion" rows="2" placeholder="Detalles de compatibilidad o marca..."></textarea>
+                </mat-form-field>
+
+            </form>
+        </mat-card-content>
+        <mat-card-actions align="end" style="padding-right: 24px; padding-bottom: 24px;">
+            <button mat-button (click)="toggleForm()">Cancelar</button>
+            <button mat-raised-button color="primary" class="btn-neon" (click)="onSubmit()" [disabled]="articuloForm.invalid || guardando">
+                <mat-icon *ngIf="guardando" class="spinner">autorenew</mat-icon>
+                <mat-icon *ngIf="!guardando">save</mat-icon>
+                {{ guardando ? 'Guardando...' : 'Guardar Pieza' }}
+            </button>
+        </mat-card-actions>
+    </mat-card>
+
+    <!-- LISTADO DE INVENTARIO -->
+    <div class="table-container mat-elevation-z8 fade-in">
+        
+        <div class="empty-state" *ngIf="articulos.length === 0 && !mostrarFormulario">
+            <mat-icon>auto_awesome_mosaic</mat-icon>
+            <h3>Catálogo Vacío</h3>
+            <p>Aún no hay refacciones registradas en el inventario.</p>
+        </div>
+
+        <table mat-table [dataSource]="articulos" class="dark-table" *ngIf="articulos.length > 0">
+            <!-- SKU Column -->
+            <ng-container matColumnDef="sku">
+                <th mat-header-cell *matHeaderCellDef>CÓDIGO SKU</th>
+                <td mat-cell *matCellDef="let element" class="table-code">{{element.sku}}</td>
+            </ng-container>
+
+            <!-- Nombre Column -->
+            <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>ARTÍCULO</th>
+                <td mat-cell *matCellDef="let element" class="table-highlight">{{element.nombre_pieza}}</td>
+            </ng-container>
+
+            <!-- Categoria Column -->
+            <ng-container matColumnDef="categoria">
+                <th mat-header-cell *matHeaderCellDef>CATEGORÍA</th>
+                <td mat-cell *matCellDef="let element" class="table-muted">{{element.categoria || 'Sin Categoría'}}</td>
+            </ng-container>
+
+            <!-- Precio Column -->
+            <ng-container matColumnDef="precio">
+                <th mat-header-cell *matHeaderCellDef>PRECIO</th>
+                <td mat-cell *matCellDef="let element" class="table-price">{{element.precio_unitario | currency}}</td>
+            </ng-container>
+
+             <!-- Stock Column con Badges Dinámicos -->
+             <ng-container matColumnDef="stock">
+                <th mat-header-cell *matHeaderCellDef>STOCK</th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="stock-badge" [ngClass]="getStockClass(element.cantidad_stock)">
+                        {{element.cantidad_stock}} uds
+                    </span>
+                </td>
+            </ng-container>
+
+            <!-- Acciones Column -->
+            <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef class="text-right"> OPERACIONES </th>
+                <td mat-cell *matCellDef="let element" class="text-right action-buttons">
+                    <button mat-icon-button class="btn-action" matTooltip="Ajustar Stock" (click)="editarArticulo(element)">
+                        <mat-icon>add_shopping_cart</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn-edit" matTooltip="Modificar Refacción" (click)="editarArticulo(element)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" matTooltip="Eliminar Refacción" (click)="eliminarArticulo(element.id)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="interactive-row"></tr>
+        </table>
+    </div>
+</div>

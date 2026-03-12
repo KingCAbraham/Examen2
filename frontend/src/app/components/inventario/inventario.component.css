@@ -1,0 +1,60 @@
+/* Reutilizamos los estilos base y agregamos específicos del Inventario */
+@import '../clientes/clientes.component.css'; 
+
+/* ESTILOS ESPECÍFICOS DE INVENTARIO */
+
+.costos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.table-code {
+    font-family: var(--font-mono);
+    color: var(--primary-color) !important;
+    font-size: 0.8rem;
+    background: rgba(3, 218, 198, 0.05);
+    padding: 4px 8px;
+    border-radius: 4px; border: 1px solid rgba(3,218,198,0.2);
+}
+
+.table-price {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+/* BADGES DE STOCK DINÁMICOS */
+.stock-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    border: 1px solid transparent;
+}
+
+.stock-ok {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.stock-bajo {
+    background: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+.stock-agotado {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.btn-action {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px;
+    margin-right: 8px;
+}

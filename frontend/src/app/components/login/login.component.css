@@ -1,0 +1,116 @@
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-color); /* #000000 */
+    background-image: linear-gradient(135deg, rgba(14, 14, 14, 0.95) 20%, rgba(14, 14, 14, 0.6) 100%), url('/assets/vag_banner.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brand-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.brand-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+}
+
+.brand-section h1 {
+    font-family: var(--font-main);
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.05em;
+    color: #fff;
+}
+
+.highlight {
+    color: var(--accent-color);
+}
+
+.brand-section p {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.login-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 32px;
+    background: rgba(17, 17, 17, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+mat-card-header {
+    margin-bottom: 24px;
+    text-align: center;
+    display: block !important;
+}
+
+mat-card-title {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+
+mat-card-subtitle {
+    color: var(--text-muted) !important;
+    font-size: 0.9rem !important;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* El form-field ya tiene padding bottom */
+}
+
+.full-width {
+    width: 100%;
+}
+
+.login-btn {
+    margin-top: 16px;
+    height: 52px;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.footer-links {
+    margin-top: 24px;
+    text-align: center;
+    color: #555;
+    font-size: 0.85rem;
+}

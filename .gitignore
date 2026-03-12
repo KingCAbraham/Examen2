@@ -16,6 +16,7 @@ backend/.env
 # Ayudas y scripts proporcionados por el Agente (IA)
 database/
 guia_db_conexion.md
+*.txt
 
 # Archivos de SO y editores
 .DS_Store

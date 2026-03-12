@@ -1,0 +1,53 @@
+<div class="login-wrapper">
+    <div class="login-container">
+        
+        <div class="brand-section">
+            <mat-icon class="brand-icon">auto_awesome_motion</mat-icon>
+            <h1>Odissey <span class="highlight">AutoTech</span></h1>
+            <p>Sistema ERP para Talleres Inteligentes</p>
+        </div>
+
+        <mat-card class="login-card p-4">
+            <mat-card-header>
+                <mat-card-title>Acceso Seguro</mat-card-title>
+                <mat-card-subtitle>Ingresa tus credenciales de empleado</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+                    
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Usuario Técnico</mat-label>
+                        <input matInput formControlName="username" placeholder="ej. maestro_charly" autocomplete="username">
+                        <mat-icon matPrefix>badge</mat-icon>
+                        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">El usuario es requerido</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Contraseña Encriptada</mat-label>
+                        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
+                        <mat-icon matPrefix>lock</mat-icon>
+                        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="'Ocultar contraseña'" [attr.aria-pressed]="hidePassword">
+                            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
+                    </mat-form-field>
+
+                    <div class="actions-container">
+                        <button mat-raised-button color="accent" type="submit" [disabled]="loginForm.invalid || cargando" class="btn-neon full-width login-btn">
+                            <mat-icon *ngIf="!cargando">login</mat-icon>
+                            <mat-icon *ngIf="cargando" class="spinner">autorenew</mat-icon>
+                            {{ cargando ? 'Verificando...' : 'Iniciar Sesión' }}
+                        </button>
+                    </div>
+
+                </form>
+            </mat-card-content>
+        </mat-card>
+        
+        <div class="footer-links">
+            <p>¿Problemas de acceso? Contacta al administrador del taller.</p>
+        </div>
+
+    </div>
+</div>
